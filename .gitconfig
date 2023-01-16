@@ -1,0 +1,12 @@
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[user]
+	name = dc
+	email = 96267949+rickjames11@users.noreply.github.com
+[pull]
+	rebase = true
+[safe]
+	directory = C:/Users/64bit/anaconda3/pkgs/notebook-6.4.8-py39haa95532_0/Lib/site-packages/notebook/static/components/codemirror/theme
