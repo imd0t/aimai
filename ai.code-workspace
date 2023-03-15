@@ -1,8 +1,7 @@
 {
 	"folders": [],
 	"settings": {
-		"cSpell.words": [
-			"EURUSD"
+		"cSpell.words": launch.json
 		],
 		"workbench.editor.enablePreview": false,
 		"editor.accessibilityPageSize": 50,
@@ -33,8 +32,6 @@
 		}
 	},
 	"extensions": {
-		"recommendations": [
-			"sibvic.profitrobots-mq5-snippets"
 		]
 	},
 	"launch": {

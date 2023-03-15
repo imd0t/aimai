@@ -1,46 +1,75 @@
-import os
-import openai
-openai.organization = "org-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"
-openai.api_key = os.getenv("OPENAI_API_KEY")
-openai.Model.list()
 import numpy as np
 import cv2
 import pyautogui
-import model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False, progress=True, pretrained_backbone=True)
+from queue import PriorityQueue
+from keyboard import is_pressed
 
-# initialize the NVIDIA 20 series graphics card
+# Initialize the NVIDIA 20 series graphics card
 graphics_card = cv2.VideoCapture(0)
 
+# Parameters
+interpolation_fps = "unlimited"
+confidence_threshold = 0.5
+strength = 1.0
+aiming_down_sights = False
+hipfire = True
+
+# Function keys
+function_key_1 = False
+function_key_2 = False
+
 while True:
-    # capture the image from the graphics card
+    # Check function key status
+    function_key_1 = is_pressed('f1')
+    function_key_2 = is_pressed('f2')
+
+    if function_key_1:
+        aiming_down_sights = not aiming_down_sights
+        hipfire = not hipfire
+
+    # Capture the image from the graphics card
     ret, frame = graphics_card.read()
     if not ret:
         print("Error capturing video frame.")
         break
 
-    # convert the image to grayscale
+    # Convert the image to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # load the Fortnite character template
+    # Load the Fortnite character template
     fortnite_template = cv2.imread('fortnite_character.jpg', 0)
 
-    # match the template with the image
+    # Match the template with the image
     result = cv2.matchTemplate(gray, fortnite_template, cv2.TM_CCOEFF_NORMED)
 
-    # get the confidence strength
+    # Get the confidence strength
     confidence_strength = np.amax(result)
 
-    # get the coordinates of the character
-    loc = np.where(result >= confidence_strength)
+    if confidence_strength >= confidence_threshold and function_key_2:
+        # Get the coordinates of the characters
+        loc = np.where(result >= confidence_strength)
 
-    # get the coordinates of the character
-    for pt in zip(*loc[::-1]):
-        # get the distance of the character
-        distance = np.sqrt((pt[0] - frame.shape[1]/2) **
-                           2 + (pt[1] - frame.shape[0]/2)**2)
+        # Store characters in a priority queue based on distance
+        characters = PriorityQueue()
+        for pt in zip(*loc[::-1]):
+            # Get the distance of the character
+            distance = np.sqrt((pt[0] - frame.shape[1]/2)**2 + (pt[1] - frame.shape[0]/2)**2)
+            characters.put((distance, pt))
 
-        # adjust the interpolation fps
-        interpolation_fps = distance/100
+        # Get the second furthest character
+        if characters.qsize() >= 2:
+            characters.get()
+            second_furthest = characters.get()[1]
 
-        # move the mouse to the character
-        pyautogui.moveTo(pt[0], pt[1], interpolation_fps)
+            # Adjust the interpolation fps
+            if interpolation_fps != "unlimited":
+                interpolation_fps = distance/100
+
+            # Move the mouse to the character
+            if aiming_down_sights:
+                pyautogui.moveTo(second_furthest[0], second_furthest[1], interpolation_fps, _pause=False)
+            elif hipfire:
+                pyautogui.moveRel(second_furthest[0] * strength, second_furthest[1] * strength, _pause=False)
+
+graphics_card.release()
+cv2.destroyAllWindows()
