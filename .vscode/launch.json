@@ -1,17 +1,6 @@
-<<<<<<< HEAD
 {
   "version": "0.2.0",
   "configurations": [
-    
-
-    {
-      "name": "Python: Current File",
-      "type": "python",
-      "request": "launch",
-      "program": "${file}",
-      "console": "integratedTerminal",
-      "justMyCode": true
-    },
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
@@ -33,5 +22,3 @@
     }
   ]
 }
-=======
->>>>>>> 209c3782b818a61c795bfd3543fa9dec2654ea63
